@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Dashboard - LiveQuiz</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    /* ========================================
+       ANALYTICS DASHBOARD STYLES WITH THEME SUPPORT
+       ======================================== */
+
+    /* Theme Variables */
+    :root {
+      --analytics-card-bg: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      --analytics-text: #2c3e50;
+      --analytics-text-secondary: #6c757d;
+      --analytics-border: #ecf0f1;
+      --analytics-shadow: rgba(0, 0, 0, 0.1);
+      --analytics-shadow-hover: rgba(0, 0, 0, 0.15);
+      --analytics-table-bg: #ffffff;
+      --analytics-table-hover: #f8f9fa;
+    }
+
+    body[data-theme="dark"] {
+      --analytics-card-bg: linear-gradient(135deg, #16213e 0%, #0f1620 100%);
+      --analytics-text: #e4e4e7;
+      --analytics-text-secondary: #a1a1aa;
+      --analytics-border: #27272a;
+      --analytics-shadow: rgba(0, 0, 0, 0.5);
+      --analytics-shadow-hover: rgba(0, 0, 0, 0.6);
+      --analytics-table-bg: #16213e;
+      --analytics-table-hover: #1e293b;
+    }
+
+    .analytics-container {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .analytics-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .analytics-header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+
+    .analytics-header p {
+      margin: 10px 0 0 0;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Stats Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--analytics-card-bg);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px var(--analytics-shadow);
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      border-left: 5px solid;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px var(--analytics-shadow-hover);
+    }
+
+    .stat-card.blue {
+      border-color: #4a90e2;
+    }
+
+    .stat-card.green {
+      border-color: #50c878;
+    }
+
+    .stat-card.orange {
+      border-color: #ff9d4d;
+    }
+
+    .stat-card.purple {
+      border-color: #9b59b6;
+    }
+
+    .stat-card.red {
+      border-color: #e74c3c;
+    }
+
+    .stat-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--analytics-text-secondary);
+      transition: color 0.3s;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 10px 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.85rem;
+      color: var(--analytics-text-secondary);
+      transition: color 0.3s;
+    }
+
+    /* Charts Section */
+    .charts-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      color: var(--analytics-text);
+      margin: 30px 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+      display: inline-block;
+      transition: color 0.3s;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .chart-card {
+      background: var(--analytics-table-bg);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px var(--analytics-shadow);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .chart-card h3 {
+      margin: 0 0 20px 0;
+      font-size: 1.3rem;
+      color: var(--analytics-text);
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+
+    .chart-container.tall {
+      height: 400px;
+    }
+
+    /* Top Students Table */
+    .table-card {
+      background: var(--analytics-table-bg);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px var(--analytics-shadow);
+      margin-bottom: 30px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .table-card h3 {
+      margin: 0 0 20px 0;
+      font-size: 1.3rem;
+      color: var(--analytics-text);
+      transition: color 0.3s;
+    }
+
+    .students-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .students-table thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .students-table th,
+    .students-table td {
+      padding: 15px;
+      text-align: left;
+      color: var(--analytics-text);
+      transition: color 0.3s;
+    }
+
+    .students-table thead th {
+      color: white;
+    }
+
+    .students-table tbody tr {
+      border-bottom: 1px solid var(--analytics-border);
+      transition: background 0.2s;
+    }
+
+    .students-table tbody tr:hover {
+      background: var(--analytics-table-hover);
+    }
+
+    .students-table .rank {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #667eea;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge.warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .badge.danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Loading Spinner */
+    .loading {
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Error Message */
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border-left: 5px solid #f5c6cb;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .analytics-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card .stat-value {
+        font-size: 2rem;
+      }
+    }
+
+    /* Navigation Buttons */
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <div class="nav-title">LiveQuiz+ Analytics</div>
+    <button class="btn-back" onclick="goBack()">⬅ Back to Dashboard</button>
+  </div>
+
+  <!-- Analytics Container -->
+  <div class="analytics-container">
+    <!-- Loading State -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading analytics data...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="error-message" style="display: none;">
+      <strong>Error:</strong> <span id="errorMessage"></span>
+    </div>
+
+    <!-- Main Content (Hidden until loaded) -->
+    <div id="content" style="display: none;">
+
+      <!-- Header -->
+      <div class="analytics-header">
+        <h1>📊 Analytics Dashboard</h1>
+        <p id="welcomeText">Welcome, Teacher!</p>
+      </div>
+
+      <!-- Summary Statistics -->
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <h3>Total Students</h3>
+          <div class="stat-value" id="totalStudents">0</div>
+          <div class="stat-label">Registered Users</div>
+        </div>
+
+        <div class="stat-card green">
+          <h3>Total Teachers</h3>
+          <div class="stat-value" id="totalTeachers">0</div>
+          <div class="stat-label">Registered Teachers</div>
+        </div>
+
+        <div class="stat-card orange">
+          <h3>Total Quizzes</h3>
+          <div class="stat-value" id="totalQuizzes">0</div>
+          <div class="stat-label">Created Quizzes</div>
+        </div>
+
+        <div class="stat-card purple">
+          <h3>Total Attempts</h3>
+          <div class="stat-value" id="totalAttempts">0</div>
+          <div class="stat-label">All Time</div>
+        </div>
+
+        <div class="stat-card red">
+          <h3>Today's Attempts</h3>
+          <div class="stat-value" id="attemptsToday">0</div>
+          <div class="stat-label">Last 24 Hours</div>
+        </div>
+
+        <div class="stat-card blue">
+          <h3>Students Online</h3>
+          <div class="stat-value" id="onlineStudents">0</div>
+          <div class="stat-label">Currently Active</div>
+        </div>
+      </div>
+
+      <!-- Top 5 Active Students -->
+      <h2 class="section-title">🏆 Most Active Students</h2>
+      <div class="table-card">
+        <table class="students-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Total Attempts</th>
+              <th>Average Score</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody id="activeStudentsTable">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 40px;">No data available</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Most Used Quiz -->
+      <h2 class="section-title">📈 Most Popular Quiz</h2>
+      <div class="table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h3 style="margin: 0;" id="mostUsedQuizTitle">N/A</h3>
+            <p style="color: #6c757d; margin: 10px 0 0 0;">
+              <strong id="mostUsedQuizAttempts">0</strong> attempts |
+              Average Score: <strong id="mostUsedQuizScore">0%</strong>
+            </p>
+          </div>
+          <div style="font-size: 3rem;">🎯</div>
+        </div>
+      </div>
+
+      <!-- Latest Poll Results -->
+      <h2 class="section-title">📊 Latest Poll Results</h2>
+      <div class="table-card" id="pollResultsCard">
+        <div id="noPollMessage" style="text-align: center; padding: 40px; color: #6c757d;">
+          <h3>No active poll</h3>
+          <p>Create a poll from the teacher dashboard to see results here.</p>
+        </div>
+        <div id="pollContent" style="display: none;">
+          <h3 id="pollQuestionTitle" style="margin-bottom: 20px;"></h3>
+
+          <!-- Poll Results Table -->
+          <table class="students-table" style="margin-bottom: 30px;">
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Votes</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody id="pollResultsTable">
+              <!-- Poll results will be inserted here -->
+            </tbody>
+          </table>
+
+          <!-- Chart.js Visualization -->
+          <div class="chart-container">
+            <canvas id="pollChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <h2 class="section-title">📊 Visual Analytics</h2>
+
+      <div class="charts-grid">
+        <!-- Pie Chart: Attempts per Subject -->
+        <div class="chart-card">
+          <h3>Quiz Attempts by Subject</h3>
+          <div class="chart-container">
+            <canvas id="subjectChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Bar Chart: Daily Active Users -->
+        <div class="chart-card">
+          <h3>Daily Active Users (Last 7 Days)</h3>
+          <div class="chart-container">
+            <canvas id="dailyUsersChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line Chart: Attempts Over Time (Full Width) -->
+      <div class="chart-card">
+        <h3>Quiz Attempts Over Time (Last 30 Days)</h3>
+        <div class="chart-container tall">
+          <canvas id="attemptsTimeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" onclick="goBack()">⬅ Back to Dashboard</button>
+        <button class="btn btn-primary" onclick="refreshData()">🔄 Refresh Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme Toggle Script -->
+  <script src="theme.js"></script>
+
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Analytics JavaScript -->
+  <script src="analytics.js"></script>
+</body>
+
+</html>

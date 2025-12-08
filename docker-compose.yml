@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # ========================================
+  # PROMETHEUS - Metrics Collection
+  # ========================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: livequiz-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # Mount prometheus configuration
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      # Persist prometheus data
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - livequiz-monitoring
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ========================================
+  # ELASTICSEARCH - Log Storage
+  # ========================================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: livequiz-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    networks:
+      - livequiz-monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ========================================
+  # LOGSTASH - Log Processing Pipeline
+  # ========================================
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: livequiz-logstash
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "9600:9600"
+    volumes:
+      # Mount logstash configuration
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      # Mount logs directory from host
+      - ./BACKEND/logs:/usr/share/logstash/logs
+      # Sincedb directory for tracking file position
+      - logstash_data:/usr/share/logstash/sincedb
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ENVIRONMENT=development
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - livequiz-monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600/_node/stats || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ========================================
+  # KIBANA - Log Visualization
+  # ========================================
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: livequiz-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibana
+      - xpack.security.enabled=false
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - livequiz-monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ========================================
+  # GRAFANA - Metrics Visualization (Optional)
+  # ========================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: livequiz-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - livequiz-monitoring
+
+# ========================================
+# NETWORKS
+# ========================================
+networks:
+  livequiz-monitoring:
+    driver: bridge
+
+# ========================================
+# VOLUMES (Persistent Data)
+# ========================================
+volumes:
+  prometheus_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  logstash_data:
+    driver: local
+  grafana_data:
+    driver: local

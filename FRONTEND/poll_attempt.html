@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Attempt Poll - LiveQuiz</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <style>
+        .poll-container {
+            max-width: 700px;
+            margin: 30px auto;
+            text-align: left;
+        }
+
+        .poll-question {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent2);
+            margin-bottom: 25px;
+        }
+
+        .poll-options {
+            margin-bottom: 30px;
+        }
+
+        .poll-option {
+            display: block;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .poll-option:hover {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .poll-option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .poll-option label {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-submit-poll {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-submit-poll:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background: #e63946;
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+        }
+
+        .message-box {
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        html,
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="nav-title">LiveQuiz+ | Poll</div>
+        <button class="btn-back" onclick="goBack()">⬅ Back</button>
+    </div>
+
+    <div class="dashboard-container poll-container">
+        <h1 style="color: var(--accent2);">📊 Current Poll</h1>
+
+        <div id="pollContent">
+            <div class="poll-question" id="pollQuestion"></div>
+
+            <div class="poll-options" id="pollOptions">
+                <!-- Options will be inserted here -->
+            </div>
+
+            <div style="text-align: center;">
+                <button type="button" class="btn-submit-poll" id="submitBtn">Submit Poll</button>
+                <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+
+        <div class="message-box" id="messageBox"></div>
+    </div>
+
+    <script src="theme.js"></script>
+    <script src="poll_attempt.js"></script>
+</body>
+
+</html>

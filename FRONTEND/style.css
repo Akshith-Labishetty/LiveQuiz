@@ -1,0 +1,151 @@
+/* ========================================
+   LIGHT THEME (DEFAULT)
+   ======================================== */
+:root {
+  /* Light Theme Colors */
+  --bg-primary: #fff8ef;
+  --bg-secondary: #ffe2c7;
+  --bg-card: #ffffffd9;
+  --accent1: #ff9d4d;
+  --accent2: #ff6a33;
+  --accent3: #ff3b2e;
+  --text-primary: #6a3b2f;
+  --text-secondary: #ffffff;
+  --border-color: #e3c2aa;
+  --shadow-color: rgba(255, 140, 60, 0.25);
+  --input-focus-shadow: rgba(255, 150, 90, 0.3);
+}
+
+/* ========================================
+   DARK THEME
+   ======================================== */
+body[data-theme="dark"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-card: #0f1620e6;
+  --accent1: #ff9d4d;
+  --accent2: #ff6a33;
+  --accent3: #ff3b2e;
+  --text-primary: #e4e4e7;
+  --text-secondary: #ffffff;
+  --border-color: #2d3748;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --input-focus-shadow: rgba(255, 150, 90, 0.5);
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  font-family: "Segoe UI", Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Card / Container */
+.card {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: 20px;
+  width: 380px;
+  box-shadow: 0 20px 45px var(--shadow-color);
+  text-align: center;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Title */
+.brand {
+  font-size: 2.2rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: var(--accent2);
+  text-shadow: 0 2px 6px rgba(255, 100, 50, 0.3);
+}
+
+/* Form Title */
+.form-title {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  font-size: 1rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, color 0.3s ease;
+}
+
+input:focus {
+  border-color: var(--accent1);
+  box-shadow: 0 0 8px var(--input-focus-shadow);
+  outline: none;
+}
+
+input::placeholder {
+  color: var(--text-primary);
+  opacity: 0.5;
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  border: none;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-top: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn:hover {
+  background: linear-gradient(90deg, var(--accent2), var(--accent3));
+  transform: translateY(-2px);
+}
+
+/* Logout button variant */
+.logout {
+  margin-top: 15px;
+  background: linear-gradient(90deg, #ff5f4b, #ff3b2e);
+}
+
+/* Protected Area */
+.protected-area {
+  margin-top: 20px;
+  text-align: left;
+}
+
+/* Hidden */
+.hidden {
+  display: none;
+}
+
+/* Status message */
+.status {
+  margin-top: 10px;
+  font-weight: 600;
+  min-height: 24px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}

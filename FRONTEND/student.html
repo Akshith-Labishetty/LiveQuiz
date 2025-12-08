@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+
+  <style>
+    #quiz-area {
+      margin-top: 20px;
+      display: none;
+      text-align: left !important;
+    }
+
+    .question-card {
+      background: #fafafa;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+      text-align: left !important;
+    }
+
+    .question-text {
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-align: left !important;
+    }
+
+    .options-list {
+      text-align: left !important;
+    }
+
+    .options-list label {
+      display: block;
+      margin: 6px 0;
+      text-align: left !important;
+      cursor: pointer;
+    }
+
+    #noquiz {
+      margin-top: 15px;
+      font-size: 18px;
+      color: #777;
+      text-align: left !important;
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="nav-title">LiveQuiz+</div>
+    <button class="btn-back" onclick="goBack()">⬅ Back</button>
+  </div>
+
+  <div class="dashboard-container">
+    <h1>Student Dashboard</h1>
+    <p id="welcomeText"></p>
+
+    <button class="btn" id="btn-attempt">Attempt Quiz</button>
+    <button class="btn" id="btn-attempt-poll" style="background: #667eea;">Attempt Poll</button>
+    <button class="btn btn-logout" onclick="logout()">Logout</button>
+
+    <p id="noquiz" style="display:none;">No quizzes active</p>
+
+    <div id="quiz-area">
+      <h2>Quiz</h2>
+      <div id="questions-wrapper"></div>
+
+      <div style="text-align:center; margin-top:20px;">
+        <button class="btn" id="btn-submit">Submit</button>
+      </div>
+
+      <h3 id="resultBox"></h3>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="theme.js"></script>
+  <script src="stu.js"></script>
+  <script>
+    // Attempt Poll Button Handler
+    document.getElementById("btn-attempt-poll").addEventListener("click", async () => {
+      const token = localStorage.getItem("token");
+
+      try {
+        const response = await fetch("http://localhost:4000/api/poll/current", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.status === 404 || !data.poll) {
+          alert("No poll at this moment");
+          return;
+        }
+
+        // Store poll data and redirect to poll attempt page
+        sessionStorage.setItem("currentPoll", JSON.stringify(data.poll));
+
+        // Check if already voted using localStorage (persists across tabs)
+        const userName = localStorage.getItem("name");
+        const studentId = localStorage.getItem("rid");
+        const voteKey = `poll_voted_${userName || studentId}`;
+        const hasVoted = localStorage.getItem(voteKey) === "true";
+
+        if (hasVoted) {
+          alert("You have already submitted this poll.");
+          return;
+        }
+
+        window.location.href = "poll_attempt.html";
+
+      } catch (err) {
+        console.error("Error checking poll:", err);
+        alert("Failed to check for poll. Please try again.");
+      }
+    });
+
+    // Logout function
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // Go back function
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+
+</body>
+
+</html>

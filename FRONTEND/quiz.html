@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Create Quiz</title>
+  <link rel="stylesheet" href="quiz.css">
+  <style>
+    /* FIX RIGHT-SIDE SCROLL */
+    html,
+    body {
+      overflow-x: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .container,
+    .question-block {
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="nav-title text-glow">LiveQuiz+</div>
+    <button class="btn-back" onclick="goBack()">⬅ Back</button>
+  </div>
+
+
+  <div class="container">
+    <h1 class="text-glow">Create Quiz</h1>
+
+
+    <div id="questions-area">
+      <div class="quiz-meta"
+        style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <label style="display: block; margin-bottom: 8px; font-weight: bold;">Quiz Title:</label>
+        <input type="text" id="quizTitle" placeholder="e.g., Math Final Exam"
+          style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px;">
+
+        <label style="display: block; margin-bottom: 8px; font-weight: bold;">Subject:</label>
+        <select id="quizSubject" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+          <option value="General">General</option>
+          <option value="Math">Math</option>
+          <option value="Science">Science</option>
+          <option value="History">History</option>
+          <option value="English">English</option>
+          <option value="Geography">Geography</option>
+          <option value="Computer Science">Computer Science</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn" onclick="addQuestion()">Add Question</button>
+    <button class="btn btn-danger" onclick="submitQuiz()">Submit Quiz</button>
+  </div>
+
+
+  <script>
+    let qCount = 0;
+
+    function addQuestion() {
+      qCount++;
+
+      const div = document.createElement("div");
+      div.className = "question-block";
+
+      div.innerHTML = `
+      <h3>Q${qCount})</h3>
+      
+      <label>Question:</label>
+      <input type="text" class="question-text" placeholder="Enter question">
+
+      <label>Option 1:</label>
+      <input type="text" class="opt1">
+
+      <label>Option 2:</label>
+      <input type="text" class="opt2">
+
+      <label>Option 3:</label>
+      <input type="text" class="opt3">
+
+      <label>Option 4:</label>
+      <input type="text" class="opt4">
+
+      <label>Correct Answer:</label>
+      <select class="correct">
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+        <option value="4">Option 4</option>
+      </select>
+    `;
+
+      document.getElementById("questions-area").appendChild(div);
+    }
+
+    // Start with 1 question automatically
+    addQuestion();
+
+    async function submitQuiz() {
+      const blocks = document.querySelectorAll(".question-block");
+      let quizData = [];
+
+      blocks.forEach(block => {
+        quizData.push({
+          question: block.querySelector(".question-text").value,
+          options: [
+            block.querySelector(".opt1").value,
+            block.querySelector(".opt2").value,
+            block.querySelector(".opt3").value,
+            block.querySelector(".opt4").value
+          ],
+          correct: block.querySelector(".correct").value
+        });
+      });
+
+      const quizTitle = document.getElementById("quizTitle").value || "General Quiz";
+      const quizSubject = document.getElementById("quizSubject").value || "General";
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:4000/api/quiz/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({
+          quiz: quizData,
+          title: quizTitle,
+          subject: quizSubject
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Quiz saved and sent to students!");
+      } else {
+        alert("Error: " + data.message);
+      }
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+
+  <script src="theme.js"></script>
+
+</body>
+
+</html>

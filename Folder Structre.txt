@@ -1,0 +1,34 @@
+LOGIN/
+│
+├── BACKEND/
+│   │
+│   ├── server.js
+│   ├── db.js
+│   ├── package-lock.json
+│   ├── package.json        (if you keep it here)
+│   │
+│   ├── node_modules/       (auto-generated)
+│   │
+│   ├── middleware/
+│   │     └── auth.js
+│   │
+│   └── models/
+│         ├── User.js
+│         └── Quiz.js
+│
+├── FRONTEND/
+│   │
+│   ├── index.html          (Login Page)
+│   ├── student.html        (Student Dashboard)
+│   ├── teacher.html        (Teacher Dashboard)
+│   ├── quiz.html           (Teacher Quiz Creation Page)
+│   │
+│   ├── frontend.js         (JS for index.html)
+│   │
+│   ├── dashboard.css
+│   ├── quiz.css
+│   ├── style.css
+│   │
+│   └── package.json        (if using npm scripts for frontend)
+│
+└── README.md (optional)

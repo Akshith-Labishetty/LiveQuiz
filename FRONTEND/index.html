@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiveQuiz+ | Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+      <h1 class="brand">LiveQuiz+</h1>
+
+      <form id="loginForm" class="form">
+        <h2 class="form-title">Login</h2>
+
+        <input name="rid" type="text" placeholder="Student/Teacher Id" required />
+        <input name="password" type="password" placeholder="Password" required />
+
+        <button type="submit" class="btn">Login</button>
+      </form>
+
+      <div class="status" id="status"></div>
+
+      <!-- <div class="protected-area hidden" id="protectedArea">
+        <h3>Protected Data</h3>
+        <p id="protectedText"></p>
+        <button id="logoutBtn" class="btn logout">Logout</button>
+      </div> -->
+    </section>
+  </main>
+
+  <script src="theme.js"></script>
+  <script src="frontend.js"></script>
+</body>
+</html>

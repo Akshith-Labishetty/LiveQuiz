@@ -487,6 +487,32 @@
         </div>
       </div>
 
+      <!-- Timeouted Students Section -->
+      <h2 class="section-title">⏱️ Timeouted Students</h2>
+      <div class="table-card">
+        <p style="color: var(--analytics-text-secondary); margin-bottom: 20px;">
+          Students whose quiz submissions failed to reach the server within 10 ms
+        </p>
+        <table class="students-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Quiz Title</th>
+              <th>Timeout Duration</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="timeoutedStudentsTable">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                No timeout events recorded
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- Charts Section -->
       <h2 class="section-title">📊 Visual Analytics</h2>
 

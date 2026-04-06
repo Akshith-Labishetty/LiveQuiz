@@ -97,6 +97,9 @@ function populateDashboard(data) {
     // Most Used Quiz
     populateMostUsedQuiz(data.mostUsedQuiz);
 
+    // Timeouted Students Table
+    populateTimeoutedStudentsTable(data.timeoutedStudents);
+
     // Render Charts
     renderSubjectChart(data.charts.attemptsPerSubject);
     renderDailyUsersChart(data.charts.dailyActiveUsers);
@@ -305,6 +308,34 @@ function populateMostUsedQuiz(quiz) {
     document.getElementById("mostUsedQuizTitle").textContent = quiz.quizTitle || "N/A";
     document.getElementById("mostUsedQuizAttempts").textContent = quiz.attempts || 0;
     document.getElementById("mostUsedQuizScore").textContent = `${quiz.averageScore || 0}%`;
+}
+
+/**
+ * Populate timeouted students table
+ */
+function populateTimeoutedStudentsTable(timeouts) {
+    const tbody = document.getElementById("timeoutedStudentsTable");
+
+    if (!timeouts || timeouts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">No timeout events recorded</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = timeouts.map((timeout, index) => {
+        const rank = index + 1;
+        const date = new Date(timeout.attemptDate);
+        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+
+        return `
+      <tr>
+        <td class="rank">${rank}</td>
+        <td><strong>${timeout.studentName}</strong></td>
+        <td>${timeout.quizTitle}</td>
+        <td><span class="badge danger">${timeout.timeoutDuration}</span></td>
+        <td>${formattedDate}</td>
+      </tr>
+    `;
+    }).join('');
 }
 
 // ========================================

@@ -37,6 +37,10 @@
   // 🔥 Track whether student has submitted
   let hasSubmitted = false;
 
+  // ⏱️ Timeout tracking
+  const MIN_TIMEOUT_MS = 1000 // 10 mseconds
+  let submissionTimeoutTimer = null;
+
   // Poll state
   let currentPoll = null;
   let hasVotedForCurrentPoll = false;
@@ -186,8 +190,49 @@
       timeTaken: 0 // We could add a timer later
     });
 
+    // ⏱️ Start timeout timer (2 seconds)
+    submissionTimeoutTimer = setTimeout(() => {
+      console.warn("⚠️ Submission timeout - no acknowledgment received");
+
+      // Emit timeout event to backend
+      socket.emit("submission-timeout", {
+        studentId: localStorage.getItem("rid") || userName,
+        studentName: userName,
+        quizId: latestQuiz.id || null,
+        quizTitle: latestQuiz.title || "General Quiz"
+      });
+
+      // Show timeout message to student
+      resultBox.innerHTML = `
+        <div style="color: #e74c3c; padding: 15px; background: #fdecea; border-radius: 8px; margin-top: 10px;">
+          <strong>⚠️ Submission Failed</strong><br>
+          Your submission failed to reach the server. You have been timed out.<br>
+          <small>Please check your internet connection and try refreshing the page.</small>
+        </div>
+      `;
+    }, MIN_TIMEOUT_MS);
+
     // 🔥 Mark submission completed
     hasSubmitted = true;
+  });
+
+  // =========================
+  // SUBMISSION ACKNOWLEDGMENT
+  // =========================
+  socket.on("submission-ack", (data) => {
+    console.log("✅ Submission acknowledged:", data);
+
+    // Clear timeout timer since we received acknowledgment
+    if (submissionTimeoutTimer) {
+      clearTimeout(submissionTimeoutTimer);
+      submissionTimeoutTimer = null;
+    }
+
+    // Show success message if not already showing score
+    if (data.success && !resultBox.innerText.includes("Your Score:")) {
+      // Keep the existing score display
+      // resultBox already has the score from the submission handler
+    }
   });
 
   // =========================

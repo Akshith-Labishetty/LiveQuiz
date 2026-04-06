@@ -1,4 +1,5 @@
 // server.js
+const path = require("path");
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -10,6 +11,7 @@ const Quiz = require("./models/Quiz.js");
 const Result = require("./models/Result.js");
 const Poll = require("./models/Poll.js");
 const PollVote = require("./models/PollVote.js");
+const TimeoutEvent = require("./models/TimeoutEvent.js");
 
 // Prometheus metrics and Winston logger
 const { register, metricsMiddleware, metrics } = require("./config/metrics.js");
@@ -39,7 +41,7 @@ setInterval(() => {
       logger.info(`Removed stale session: ${userId}`);
     }
   }
-}, 60000);
+}, 180000);
 
 const app = express();
 
@@ -48,7 +50,15 @@ app.use(metricsMiddleware);
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static("public"));
+
+// Serve frontend files from FRONTEND folder
+const frontendPath = path.join(__dirname, "..", "FRONTEND");
+app.use(express.static(frontendPath));
+
+// Serve root path with index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
 
 // Connect to MongoDB with logging
 connectDB();
@@ -237,7 +247,8 @@ app.get("/api/analytics", auth, async (req, res) => {
       mostUsedQuiz,
       attemptsPerSubject,
       dailyActiveUsers,
-      attemptsOverTime
+      attemptsOverTime,
+      timeoutEvents
     ] = await Promise.all([
       // 1. Total Students Registered
       User.countDocuments({ role: "student" }),
@@ -373,6 +384,22 @@ app.get("/api/analytics", auth, async (req, res) => {
           }
         },
         { $sort: { date: 1 } }
+      ]),
+
+      // 11. Timeout Events - Students whose submissions didn't reach server in time
+      TimeoutEvent.aggregate([
+        { $sort: { attemptDate: -1 } },
+        {
+          $project: {
+            _id: 0,
+            studentId: 1,
+            studentName: 1,
+            quizId: 1,
+            quizTitle: 1,
+            timeoutDuration: 1,
+            attemptDate: 1
+          }
+        }
       ])
     ]);
 
@@ -383,6 +410,16 @@ app.get("/api/analytics", auth, async (req, res) => {
         onlineStudentsCount++;
       }
     }
+
+    // Format timeout events with duration as string
+    const formattedTimeouts = (timeoutEvents || []).map(event => ({
+      studentId: event.studentId,
+      studentName: event.studentName,
+      quizId: event.quizId,
+      quizTitle: event.quizTitle,
+      timeoutDuration: `${event.timeoutDuration / 1000}s`,  // Convert ms to seconds
+      attemptDate: event.attemptDate
+    }));
 
     // Prepare response
     const analyticsData = {
@@ -396,6 +433,7 @@ app.get("/api/analytics", auth, async (req, res) => {
       },
       activeStudents: activeStudents || [],
       mostUsedQuiz: mostUsedQuiz[0] || { quizTitle: "N/A", attempts: 0, averageScore: 0 },
+      timeoutedStudents: formattedTimeouts,
       charts: {
         attemptsPerSubject: attemptsPerSubject || [],
         dailyActiveUsers: dailyActiveUsers || [],
@@ -589,7 +627,7 @@ app.post("/api/poll/submit", auth, async (req, res) => {
 
 // =========================
 // SOCKET.IO EVENTS
-// =========================
+// =========================  
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
@@ -639,10 +677,22 @@ io.on("connection", (socket) => {
         studentId: data.studentId,
         score: `${data.score}/${data.total}`
       });
+
+      // Send acknowledgment to student that submission was received
+      socket.emit("submission-ack", {
+        success: true,
+        message: "Submission received successfully"
+      });
     } catch (err) {
       console.error("❌ SAVE FAILED:", err.message);
       console.error("Full Error:", err);
       logger.logError(err, { context: 'Save result to DB', data });
+
+      // Send error acknowledgment
+      socket.emit("submission-ack", {
+        success: false,
+        message: "Failed to save submission"
+      });
     }
 
     // 1️⃣ Real-time update to teacher
@@ -656,6 +706,40 @@ io.on("connection", (socket) => {
     } catch (err) {
       console.error("Celery task send failed:", err.message);
       logger.logError(err, { context: 'Celery task send', data });
+    }
+  });
+
+  // =========================
+  // SUBMISSION TIMEOUT EVENT
+  // =========================
+  socket.on("submission-timeout", async (data) => {
+    console.log("⏱️ Received submission timeout:", JSON.stringify(data, null, 2));
+
+    if (!data || !data.studentId || !data.quizTitle) {
+      console.error("❌ Invalid timeout data received");
+      return;
+    }
+
+    try {
+      // Save timeout event to database
+      const timeoutEvent = new TimeoutEvent({
+        studentId: data.studentId,
+        studentName: data.studentName || 'Unknown',
+        quizId: data.quizId || null,
+        quizTitle: data.quizTitle,
+        timeoutDuration: 10  // MIN_TIMEOUT_MS
+      });
+
+      await timeoutEvent.save();
+
+      console.log(`✅ Timeout event recorded for student: ${data.studentName}`);
+      logger.info('Submission timeout recorded', {
+        studentId: data.studentId,
+        quizTitle: data.quizTitle
+      });
+    } catch (err) {
+      console.error("❌ Failed to save timeout event:", err.message);
+      logger.logError(err, { context: 'Save timeout event', data });
     }
   });
 

@@ -7322,3 +7322,24 @@
 {"level":"info","message":"LiveQuiz server started on port 4000","metadata":{"features":["WebSocket","Redis","Celery","Prometheus","Logstash"],"port":4000,"service":"livequiz-backend"},"timestamp":"2026-04-06 15:15:21"}
 {"level":"info","message":"Prometheus metrics available at http://localhost:4000/metrics","metadata":{"service":"livequiz-backend"},"timestamp":"2026-04-06 15:15:21"}
 {"level":"info","message":"Redis adapter connected successfully","metadata":{"service":"livequiz-backend"},"timestamp":"2026-04-06 15:15:21"}
+{"level":"info","message":"MongoDB connection initiated","metadata":{"service":"livequiz-backend"},"timestamp":"2026-07-28 09:55:58"}
+{"level":"info","message":"LiveQuiz server started on port 4000","metadata":{"features":["WebSocket","Redis","Celery","Prometheus","Logstash"],"port":4000,"service":"livequiz-backend"},"timestamp":"2026-07-28 09:55:58"}
+{"level":"info","message":"Prometheus metrics available at http://localhost:4000/metrics","metadata":{"service":"livequiz-backend"},"timestamp":"2026-07-28 09:55:58"}
+{"level":"info","message":"Redis adapter connected successfully","metadata":{"service":"livequiz-backend"},"timestamp":"2026-07-28 09:55:58"}
+{"level":"warn","message":"User login failed","metadata":{"error":"Invalid password","event":"user_login","ip":null,"rid":"S002","role":"student","service":"livequiz-backend","success":false},"timestamp":"2026-07-28 09:59:45"}
+{"level":"info","message":"User login successful","metadata":{"event":"user_login","ip":null,"rid":"S002","role":"student","service":"livequiz-backend","success":true},"timestamp":"2026-07-28 09:59:53"}
+{"level":"info","message":"WebSocket connection established","metadata":{"event":"socket_connected","service":"livequiz-backend","socketId":"O5NXbBAM7majvptOAAAB","userId":null},"timestamp":"2026-07-28 09:59:53"}
+{"level":"info","message":"User login successful","metadata":{"event":"user_login","ip":null,"rid":"T001","role":"teacher","service":"livequiz-backend","success":true},"timestamp":"2026-07-28 10:00:06"}
+{"level":"info","message":"WebSocket connection established","metadata":{"event":"socket_connected","service":"livequiz-backend","socketId":"rxdCkspTh2zk2jLsAAAD","userId":null},"timestamp":"2026-07-28 10:00:06"}
+{"level":"info","message":"Quiz created","metadata":{"event":"quiz_created","questionCount":1,"service":"livequiz-backend","teacherId":"6936aad399b56ee23679c69f"},"timestamp":"2026-07-28 10:00:29"}
+{"level":"info","message":"Quiz submitted","metadata":{"event":"quiz_submitted","percentage":"Infinity","score":1,"service":"livequiz-backend","studentId":"Student2","studentName":"Student2","totalQuestions":0},"timestamp":"2026-07-28 10:00:37"}
+{"level":"info","message":"Quiz result saved to database","metadata":{"score":"1/1","service":"livequiz-backend","studentId":"Student2"},"timestamp":"2026-07-28 10:00:37"}
+{"level":"info","message":"Quiz result sent to Celery","metadata":{"service":"livequiz-backend","studentId":"Student2"},"timestamp":"2026-07-28 10:00:38"}
+{"level":"info","message":"Analytics data requested","metadata":{"service":"livequiz-backend","userId":"6936aad399b56ee23679c69f"},"timestamp":"2026-07-28 10:00:44"}
+{"level":"info","message":"Analytics data sent successfully","metadata":{"service":"livequiz-backend","userId":"6936aad399b56ee23679c69f"},"timestamp":"2026-07-28 10:00:44"}
+{"level":"info","message":"Analytics data requested","metadata":{"service":"livequiz-backend","userId":"6936aad399b56ee23679c69f"},"timestamp":"2026-07-28 10:00:54"}
+{"level":"info","message":"Analytics data sent successfully","metadata":{"service":"livequiz-backend","userId":"6936aad399b56ee23679c69f"},"timestamp":"2026-07-28 10:00:54"}
+{"level":"info","message":"Analytics data requested","metadata":{"service":"livequiz-backend","userId":"6936aad399b56ee23679c69f"},"timestamp":"2026-07-28 10:01:04"}
+{"level":"info","message":"Analytics data sent successfully","metadata":{"service":"livequiz-backend","userId":"6936aad399b56ee23679c69f"},"timestamp":"2026-07-28 10:01:04"}
+{"level":"info","message":"WebSocket connection closed","metadata":{"event":"socket_disconnected","service":"livequiz-backend","socketId":"rxdCkspTh2zk2jLsAAAD"},"timestamp":"2026-07-28 10:01:11"}
+{"level":"info","message":"WebSocket connection closed","metadata":{"event":"socket_disconnected","service":"livequiz-backend","socketId":"O5NXbBAM7majvptOAAAB"},"timestamp":"2026-07-28 10:01:13"}
